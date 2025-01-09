@@ -61,21 +61,53 @@ def create_accounts():
 # LIST ALL ACCOUNTS
 ######################################################################
 
-# ... place you code here to LIST accounts ...
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    """List all Accounts"""
+    app.logger.info("Request to list Accounts")
+    accounts = Account.all()
+    account_list = [account.serialize() for account in accounts]
+    app.logger.info("Returning [%s] accounts", len(account_list))
+    return jsonify(account_list), status.HTTP_200_OK
 
 
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
 
-# ... place you code here to READ an account ...
+# ... place you code here to READ an account 
+@app.route("/accounts/<int:account_id>", methods=["GET"])
+def get_account(account_id):
+    """
+    Retrieve a single Account
+    This endpoint will return an Account based on its id
+    """
+    app.logger.info("Request to retrieve Account with id: %s", account_id)
+    account = Account.find(account_id)
+    if not account:
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
+    return jsonify(account.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
 
-# ... place you code here to UPDATE an account ...
+# ... place you code here to UPDATE an account 
+
+@app.route("/accounts/<int:account_id>", methods=["PUT"])
+def update_account(account_id):
+    """
+    Update an Account
+    This endpoint will update an Account based on its id
+    """
+    app.logger.info("Request to update Account with id: %s", account_id)
+    account = Account.find(account_id)
+    if not account:
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
+    account.name = request.json.get("name", account.name)
+    account.save()
+    return jsonify(account.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
@@ -83,6 +115,8 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to DELETE an account ...
+
+
 
 
 ######################################################################
